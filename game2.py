@@ -2,8 +2,7 @@ import numpy as np
 import gym
 import random
 import time
-import pickle
-outfile = open("weights.npy", "wb")
+
 
 """Types of Noise
    Sensor noise type = 0   => No Sensor Noise
@@ -124,7 +123,9 @@ def start():
     agent=Agent()
     environ=Environ()
     count=0
-    weights = 0
+    weights = 1
+    w_t = np.load('weights.npy')
+    values = w_t
     for runs in range(1,max_runs+1):
 
       for trial in range(1,max_trials+1):
@@ -259,9 +260,8 @@ def start():
             print ("Trial #",trial, "has balanced for", str(steps)," steps in run#",runs)
             Exphist.append((runs,trial))
             w_t = values
-            #print (values)
             weights = 1
-            count+=1
+            count += 1
             break
         else:
             count=0
@@ -271,7 +271,7 @@ def start():
             weights=0
             print("Still continuing",trial)
 
-    np.save(outfile, w_t)
+
     print("[Run,Trial]",Exphist)
     trial_sum=0
     for run,trial in Exphist:

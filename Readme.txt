@@ -17,7 +17,7 @@ $ python setup.py install
 % Execution %
 Running the code
  
-$ python team6.py
+$ python game.py
 
 #Tune the noise parameters in the file to see different results.
  
