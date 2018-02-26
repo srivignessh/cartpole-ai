@@ -281,7 +281,7 @@ def start():
     avg_reward = total_reward / max_runs
     print(max_runs,"runs : Average # of trial is ",avg_trial)
     print("Successful Runs",success_ratio,"%")
-    print("Total Reward",total_reward)
+    print("Total Avg Reward",total_reward/max_runs)
 
 if __name__ == "__main__":
     start_time = time.time()
