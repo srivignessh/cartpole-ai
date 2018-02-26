@@ -1,6 +1,6 @@
 
-Software Requirements : Python 3
-Python Package Requirements : Numpy
+Software Requirements : Python 3 / intelpython 3
+Python Package Requirements : Numpy / PyDAAL
 
 %Installation%	
 1> Install numpy
