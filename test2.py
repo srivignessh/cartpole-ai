@@ -26,7 +26,7 @@ r_seed=10             #Random Seed
 
 max_steps=200      #Max Number of steps
 max_trials=1       #Max of Trial in a Run
-max_runs=10           #Max Number of Runs
+max_runs=100           #Max Number of Runs
 
 
 Rad2Ang=180/np.pi
@@ -136,21 +136,12 @@ def start():
         la = Initla
 
         #Actor and Critic Network Random Weight Initialization
-        if not weights:
-            wc1 = np.square((np.random.uniform(0, 1, (wc_inputs, n_hidden)) - 0.5))
-            wc2 = np.square((np.random.uniform(0, 1, (n_hidden, 1)) - 0.5))
-            wa1 = np.square((np.random.uniform(0, 1, (wa_inputs, n_hidden)) - 0.5))
-            wa2 = np.square((np.random.uniform(0, 1, (n_hidden, 1)) - 0.5))
-            delta_wa1 = np.random.uniform(1, n_hidden)
-            delta_wa2 = np.random.uniform(n_hidden, 1)
-            values= [wc1,wc2,wa1,wa2,delta_wa1,delta_wa2]
-        else:
-            wc1=w_t[0]
-            wc2=w_t[1]
-            wa1=w_t[2]
-            wa2=w_t[3]
-            delta_wa1=w_t[4]
-            delta_wa2=w_t[5]
+        wc1=w_t[0]
+        wc2=w_t[1]
+        wa1=w_t[2]
+        wa2=w_t[3]
+        delta_wa1=w_t[4]
+        delta_wa2=w_t[5]
 
         # Start Trial
         initstate=env.reset()
@@ -167,7 +158,7 @@ def start():
                 action = 1
             else:
                 action = 0
-            env.render()
+            #env.render()
             next_state, reward, done, info = env.step(action)
             total_reward = total_reward + reward
             inputs = environ.sensor_noise(next_state, sensor_noise_type, rs,rsig)
@@ -200,7 +191,7 @@ def start():
                 gradqwc1 = x.T
                 for i in range(n_hidden):
                     gradJp=wc2[i]
-                    gradpq=0.5*(1-np.square(p[i]))
+                    gradpq=0.5*(np.exp(-p[i]/15))
                     wc1[:,i]-=lc*np.matmul(gradEcJ,gradJp)*gradpq*gradqwc1
 
                 gradJwc2=p.T
@@ -222,16 +213,16 @@ def start():
             #Action network update
             while (Ea>Ta and cyc<=Nact):
 
-                graduv = 0.5*(1-np.square(new_action))
+                graduv = 0.5*(np.exp(-new_action/15))
                 gradEaJ = eact
                 gradJu = 0
 
                 for i in range(n_hidden):
-                    gradJu = gradJu + wc2[i]*0.5*(1-np.square(p[i]))*wc1[wc_inputs-1,i]
+                    gradJu = gradJu + wc2[i]*0.5*(np.exp(-p[i])/15)*wc1[wc_inputs-1,i]
 
                 for i in range(n_hidden):
                     gradvg=wa2[i]
-                    gradgh=0.5*(1-np.square(g[i]))
+                    gradgh=0.5*(np.exp(-g[i]/15))
                     gradhwa1=inputs.T
                     delta_wa1=-la*gradEaJ*gradJu*graduv*gradvg*gradgh*gradhwa1
                     wa1[:,i] += delta_wa1
