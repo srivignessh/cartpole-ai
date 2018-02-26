@@ -131,7 +131,7 @@ def start():
 
       for trial in range(1,max_trials+1):
 
-        steps = 1
+        steps = 0
         lc = Initlc
         la = Initla
 
@@ -162,16 +162,14 @@ def start():
         Jprev = J
 
         #Exceute Trial until Failure
-        while(steps<=max_steps):
-            if steps%1000==0:
-                print ("Its is", str(steps),"time steps now")
+        while(steps<max_steps):
             if (new_action >= 0):
                 action = 1
             else:
                 action = 0
             #env.render()
             next_state, reward, done, info = env.step(action)
-            total_reward= total_reward + reward
+            total_reward = total_reward + reward
             inputs = environ.sensor_noise(next_state, sensor_noise_type, rs,rsig)
             new_action,g = agent.act(inputs,wa1,wa2)
             x = agent.crit_input(inputs, new_action)
@@ -259,12 +257,12 @@ def start():
             steps+=1
 
         if not done:
-            print ("Trial #",trial, "has balanced for", str(steps)," steps in run#",runs)
+
             Exphist.append((runs,trial))
             w_t = values
-            print (total_reward)
             weights = 1
             count += 1
+            print ("Trial #",trial, "has balanced for", str(steps)," steps in run#",runs," consecutive avg reward", total_reward/count)
             break
         else:
             print ("Trial has", str(steps), "steps now")
