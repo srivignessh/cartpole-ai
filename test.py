@@ -26,7 +26,7 @@ r_seed=10             #Random Seed
 
 max_steps=200      #Max Number of steps
 max_trials=1       #Max of Trial in a Run
-max_runs=120           #Max Number of Runs
+max_runs=100           #Max Number of Runs
 
 
 Rad2Ang=180/np.pi
@@ -126,6 +126,7 @@ def start():
     weights = 1
     w_t = np.load('weights.npy')
     values = w_t
+    total_reward = 0
     for runs in range(1,max_runs+1):
 
       for trial in range(1,max_trials+1):
@@ -161,7 +162,7 @@ def start():
         Jprev = J
 
         #Exceute Trial until Failure
-        while(steps<max_steps):
+        while(steps<=max_steps):
             if steps%1000==0:
                 print ("Its is", str(steps),"time steps now")
             if (new_action >= 0):
@@ -170,6 +171,7 @@ def start():
                 action = 0
             #env.render()
             next_state, reward, done, info = env.step(action)
+            total_reward= total_reward + reward
             inputs = environ.sensor_noise(next_state, sensor_noise_type, rs,rsig)
             new_action,g = agent.act(inputs,wa1,wa2)
             x = agent.crit_input(inputs, new_action)
@@ -214,7 +216,7 @@ def start():
                 Ec = 0.5 * np.square(ecrit)
 
             #normalize weights
-            wc1,wc2=agent.normalize(wc1,wc2)
+            wc1,wc2 = agent.normalize(wc1,wc2)
 
             cyc = 0
             eact=J-Uc
@@ -260,14 +262,14 @@ def start():
             print ("Trial #",trial, "has balanced for", str(steps)," steps in run#",runs)
             Exphist.append((runs,trial))
             w_t = values
+            print (total_reward)
             weights = 1
             count += 1
             break
         else:
-            count=0
             print ("Trial has", str(steps), "steps now")
 
-        if(trial%100==0):
+        if(trial%100 == 0):
             weights=0
             print("Still continuing",trial)
 
@@ -278,8 +280,10 @@ def start():
         trial_sum+=trial
     avg_trial=trial_sum/max_runs
     success_ratio=count/max_runs*100
+    avg_reward = total_reward / max_runs
     print(max_runs,"runs : Average # of trial is ",avg_trial)
     print("Successful Runs",success_ratio,"%")
+    print("Total Reward",total_reward)
 
 if __name__ == "__main__":
     start_time = time.time()
