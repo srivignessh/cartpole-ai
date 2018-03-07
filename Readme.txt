@@ -17,7 +17,8 @@ $ python setup.py install
 % Execution %
 Running the code
  
-$ python game.py
+$ python test.py
 
 #Tune the noise parameters in the file to see different results.
+ 
  
